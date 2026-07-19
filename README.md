@@ -182,7 +182,23 @@ print(hunter.format_hunt_results(results))
 ip_data = IPTracker.track_ip("8.8.8.8")
 print(IPTracker.format_ip_info(ip_data))
 ```
+<div align="center">
 
+<img src="https://media.tenor.com/5cL7j8Q6k0AAAAAC/reze-chainsaw-man.gif"
+     width="100%"
+     alt="Reze Chainsaw Man animation">
+
+</div>
+
+# “My purpose was never to harm the HelloTalk platform. I am not here to destroy what others have built. I am here to expose weaknesses before they become disasters. Every vulnerability I discover is not a weapon against HelloTalk — it is a warning. Every flaw I identify is an opportunity to strengthen the walls, protect the users, and make the platform safer. I do not fight the platform. I fight the threats that could one day stand against it. My purpose is not destruction. My purpose is protection. I am not the enemy of HelloTalk. I am the shadow that searches for the cracks… so they can be sealed before the real enemies find them.
+
+<div align="center">
+
+<img src="TENOR_DIRECT_GIF_URL"
+     width="100%"
+     alt="Gachiakuta Zanka flex animation">
+
+</div>
 ---
 
 🔬 Security Test Modules

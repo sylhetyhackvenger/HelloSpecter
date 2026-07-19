@@ -194,9 +194,9 @@ print(IPTracker.format_ip_info(ip_data))
 
 <div align="center">
 
-<img src="TENOR_DIRECT_GIF_URL"
+<img src="https://media.giphy.com/media/EA9AeIlru9jkSgkouN/giphy.gif"
      width="100%"
-     alt="Gachiakuta Zanka flex animation">
+     alt="Anime heart animation">
 
 </div>
 ---

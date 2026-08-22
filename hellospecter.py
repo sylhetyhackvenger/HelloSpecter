@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-HELLOTALK PROFESSIONAL SECURITY SCANNER + OSINT SUITE
-Complete profile extraction + Security Testing + IP/Username Hunting
-Version: 2.0 Ultimate | Author: SYLHETYHACKVENGER (THE-ERROR808)
-"""
-
 import sys
 import os
 import re
@@ -28,7 +22,6 @@ from dataclasses import dataclass, field, asdict
 from urllib.parse import urljoin, urlparse, parse_qs
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Third-party imports
 try:
     import requests
     from bs4 import BeautifulSoup
@@ -40,22 +33,15 @@ except ImportError as e:
     print(f"Error: Missing required module. Please install: pip install requests beautifulsoup4 fake-useragent colorama phonenumbers")
     sys.exit(1)
 
-# Suppress SSL warnings
 try:
     from urllib3.exceptions import InsecureRequestWarning
     warnings.filterwarnings('ignore', category=InsecureRequestWarning)
 except ImportError:
     pass
 
-# Initialize colorama
 init(autoreset=True)
 
-# ============================================================================
-# 🎨 COLOR CONFIGURATION
-# ============================================================================
-
 class Colors:
-    """Terminal color configuration"""
     HEADER = Fore.CYAN + Style.BRIGHT
     SUCCESS = Fore.GREEN + Style.BRIGHT
     WARNING = Fore.YELLOW + Style.BRIGHT
@@ -92,13 +78,8 @@ class Colors:
     INJECTION = Fore.RED + "💉"
     OSINT = Fore.CYAN + "🕵️"
 
-# ============================================================================
-# 📊 DATA MODELS
-# ============================================================================
-
 @dataclass
 class ProfileStats:
-    """Profile statistics container"""
     followers: int = 0
     following: int = 0
     posts: int = 0
@@ -299,33 +280,17 @@ class HelloTalkProfile:
             'response_size': self.response_size
         }
 
-# ============================================================================
-# 🛠️ USERNAME CLEANER
-# ============================================================================
-
 class UsernameCleaner:
-    """Clean and extract usernames from HelloTalk profiles"""
     
     @staticmethod
     def clean_hellotalk_username(raw_username: str) -> str:
-        """
-        Clean HelloTalk username by removing prefixes like:
-        cv_, cd_, we_, ht_, xx_ (2 letters + underscore)
-        Also handles patterns like xx-username
-        """
         if not raw_username:
             return raw_username
         
-        # Remove common prefixes: xx_ (2 letters + underscore)
         cleaned = re.sub(r'^[a-zA-Z]{2}_', '', raw_username)
-        
-        # Remove patterns like xx- (2 letters + dash)
         cleaned = re.sub(r'^[a-zA-Z]{2}-', '', cleaned)
-        
-        # Remove numeric prefixes like 01_, 02_ etc
         cleaned = re.sub(r'^[0-9]{1,2}_', '', cleaned)
         
-        # If still has prefix, try to extract the meaningful part
         if '_' in cleaned and len(cleaned.split('_')) > 1:
             parts = cleaned.split('_')
             cleaned = max(parts, key=len) if parts else cleaned
@@ -334,7 +299,6 @@ class UsernameCleaner:
     
     @staticmethod
     def extract_username_from_url(url: str) -> str:
-        """Extract username from HelloTalk profile URL"""
         match = re.search(r'/en/partners/([^/?]+)', url)
         if match:
             return match.group(1)
@@ -342,7 +306,6 @@ class UsernameCleaner:
     
     @staticmethod
     def generate_search_variants(username: str) -> List[str]:
-        """Generate search variants for social media hunting"""
         variants = [username]
         
         prefixes = ['', 'real', 'official', 'the', 'iam', 'im']
@@ -361,12 +324,7 @@ class UsernameCleaner:
         
         return list(set(variants))
 
-# ============================================================================
-# 🛠️ IP TRACKER
-# ============================================================================
-
 class IPTracker:
-    """IP address tracking and intelligence module"""
     
     @staticmethod
     def get_my_ip() -> str:
@@ -417,12 +375,7 @@ class IPTracker:
         info.append(f"{Colors.HEADER}{'═'*60}")
         return '\n'.join(info)
 
-# ============================================================================
-# 🛠️ PHONE TRACKER
-# ============================================================================
-
 class PhoneTracker:
-    """Phone number tracking and intelligence module"""
     
     @staticmethod
     def track_phone(phone_number: str, default_region: str = "ID") -> Dict:
@@ -484,12 +437,7 @@ class PhoneTracker:
         info.append(f"{Colors.HEADER}{'═'*60}")
         return '\n'.join(info)
 
-# ============================================================================
-# 🛠️ USERNAME HUNTER
-# ============================================================================
-
 class UsernameHunter:
-    """Multi-platform username hunter with automatic username cleaning"""
     
     def __init__(self, auto_clean: bool = True):
         self.session = requests.Session()
@@ -530,8 +478,6 @@ class UsernameHunter:
         {"url": "https://www.ello.co/{}", "name": "Ello"},
         {"url": "https://www.weheartit.com/{}", "name": "We Heart It"},
         {"url": "https://www.threads.net/@{}", "name": "Threads"},
-
-        # ---- TRADING / FINANCE (30+) ----
         {"url": "https://www.tradingview.com/u/{}", "name": "TradingView"},
         {"url": "https://www.etoro.com/people/{}", "name": "eToro"},
         {"url": "https://www.zulutrade.com/trader/{}", "name": "ZuluTrade"},
@@ -555,8 +501,6 @@ class UsernameHunter:
         {"url": "https://hubstafftalent.com/freelancer/{}", "name": "Hubstaff Talent"},
         {"url": "https://www.skyword.com/author/{}", "name": "Skyword"},
         {"url": "https://www.authenticjobs.com/{}", "name": "Authentic Jobs"},
-
-        # ---- LANGUAGE LEARNING (20+) ----
         {"url": "https://www.duolingo.com/profile/{}", "name": "Duolingo"},
         {"url": "https://www.memrise.com/user/{}", "name": "Memrise"},
         {"url": "https://www.busuu.com/{}", "name": "Busuu"},
@@ -577,8 +521,6 @@ class UsernameHunter:
         {"url": "https://hinative.com/en-US/users/{}", "name": "HiNative"},
         {"url": "https://www.lingodeer.com/user/{}", "name": "Lingodeer"},
         {"url": "https://www.mangolanguages.com/profile/{}", "name": "Mango Languages"},
-
-        # ---- CYBERSECURITY / HACKING PLATFORMS ----
         {"url": "https://www.hackerrank.com/{}", "name": "HackerRank"},
         {"url": "https://leetcode.com/{}", "name": "LeetCode"},
         {"url": "https://www.codewars.com/users/{}", "name": "CodeWars"},
@@ -592,14 +534,10 @@ class UsernameHunter:
         {"url": "https://www.openbugbounty.org/researchers/{}", "name": "Open Bug Bounty"},
         {"url": "https://yeswehack.com/hunter/{}", "name": "YesWeHack"},
         {"url": "https://cyberdefenders.org/profile/{}", "name": "CyberDefenders"},
-    
-
-    # Also add some blogging / news platforms (journals)
-    
         {"url": "https://{}.blogspot.com", "name": "Blogger"},
         {"url": "https://{}.wordpress.com", "name": "WordPress"},
         {"url": "https://substack.com/@{}", "name": "Substack"},
-        {"url": "https://medium.com/@{}", "name": "Medium (already)"},  # already included
+        {"url": "https://medium.com/@{}", "name": "Medium (already)"},
         {"url": "https://hashnode.com/@{}", "name": "Hashnode"},
         {"url": "https://dev.to/{}", "name": "DEV Community"},
     ]
@@ -769,10 +707,6 @@ class UsernameHunter:
         
         output.append(f"{Colors.HEADER}{'═'*60}")
         return '\n'.join(output)
-
-# ============================================================================
-# 🛠️ ADVANCED SECURITY TESTER
-# ============================================================================
 
 class AdvancedSecurityTester:
     def __init__(self):
@@ -1302,10 +1236,6 @@ class AdvancedSecurityTester:
         print(f"{risk_color}📊 OVERALL RISK LEVEL: {self.results.overall_risk}{Colors.RESET}")
         print(f"{Colors.HEADER}{'═'*80}")
 
-# ============================================================================
-# 🛠️ HELLOTALK PROFILE SCANNER
-# ============================================================================
-
 class HelloTalkProfileScanner:
     def __init__(self):
         self.base_url = "https://www.hellotalk.com"
@@ -1407,7 +1337,6 @@ class HelloTalkProfileScanner:
             response_size=len(html)
         )
         
-        # 1. NAME
         title = soup.find('title')
         if title:
             title_text = title.get_text()
@@ -1415,7 +1344,6 @@ class HelloTalkProfileScanner:
             if match:
                 profile.name = match.group(1).strip()
         
-        # 2. BIO
         about_section = soup.find('div', class_=re.compile(r'about|bio|description'))
         if about_section:
             bio_text = about_section.get_text()
@@ -1429,7 +1357,6 @@ class HelloTalkProfileScanner:
             if bio_match:
                 profile.bio = bio_match.group(1).strip()
         
-        # 3. LOCATION
         location_match = re.search(r'Location\s*[:]*\s*([^,\n]+(?:,\s*[^,\n]+)?)', clean_text, re.IGNORECASE)
         if location_match:
             location = location_match.group(1).strip()
@@ -1441,7 +1368,6 @@ class HelloTalkProfileScanner:
             else:
                 profile.country = location
         
-        # 4. LANGUAGES
         native_match = re.search(r'Native\s*Language\s*[:]*\s*([^\n]+)', clean_text, re.IGNORECASE)
         if native_match:
             lang = native_match.group(1).strip()
@@ -1461,7 +1387,6 @@ class HelloTalkProfileScanner:
                 if lang and len(lang) < 30:
                     profile.learning_language = [lang]
         
-        # 5. INTERESTS
         interests_section = soup.find('div', class_=re.compile(r'interests|hobbies|about'))
         if interests_section:
             interests_text = interests_section.get_text()
@@ -1476,12 +1401,10 @@ class HelloTalkProfileScanner:
                 interests_raw = interests_text_match.group(1).strip()
                 profile.interests = [i.strip() for i in interests_raw.split() if i.strip()]
         
-        # 6. PROFESSION
         profession_match = re.search(r'Profession\s*[:]*\s*([^\n]+)', clean_text, re.IGNORECASE)
         if profession_match:
             profile.profession = profession_match.group(1).strip()
         
-        # 7. STATS
         stats_patterns = {
             'followers': r'(\d+[.,]?\d*)\s*(?:Followers|followers)',
             'following': r'(\d+[.,]?\d*)\s*(?:Following|following)',
@@ -1512,18 +1435,15 @@ class HelloTalkProfileScanner:
                 except:
                     pass
         
-        # 8. LEVEL
         level_match = re.search(r'Level\s*[:]*\s*(\d+)', clean_text, re.IGNORECASE)
         if level_match:
             profile.stats.level = int(level_match.group(1))
         
-        # 9. VERIFICATION & PREMIUM
         if 'Verified' in clean_text or 'verified' in clean_text:
             profile.is_verified = True
         if 'Premium' in clean_text or 'VIP' in clean_text:
             profile.is_premium = True
         
-        # 10. COMPLETENESS
         fields_to_check = [
             'name', 'bio', 'native_language', 'learning_language',
             'location', 'country', 'city', 'interests', 'profession'
@@ -1765,10 +1685,6 @@ class HelloTalkProfileScanner:
         
         return results
 
-# ============================================================================
-# 🎮 INTERACTIVE CLI
-# ============================================================================
-
 def interactive_mode():
     scanner = HelloTalkProfileScanner()
     
@@ -1869,10 +1785,6 @@ def interactive_mode():
             else:
                 print(f"{Colors.WARNING}⚠️ No profiles scanned yet{Colors.RESET}")
             input(f"\n{Colors.DIM}Press Enter to continue...{Colors.RESET}")
-
-# ============================================================================
-# 🚀 MAIN ENTRY POINT
-# ============================================================================
 
 def main():
     try:
